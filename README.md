@@ -12,6 +12,8 @@ MTS-One Backend is a RESTful API built with **Spring Boot** that provides core f
 - **Version Control:** Git & GitHub
 - **Build Tool:** Maven
 - **CI/CD:** GitHub Actions (Optional for Deployment)
+- **Testing:** JUnit 5, Mockito, Testcontainers, RestAssured
+- **Observability:** OpenTelemetry, Jaeger, Prometheus, Grafana
 
 ## 🏗 Project Structure (Modular Architecture)
 ```
@@ -126,14 +128,27 @@ mvn spring-boot:run
 - **v2:** Future upgrades will be in `/api/v2/...`
 
 ## ✅ Best Practices Followed
-✔ **Modular Architecture**: Scalable & maintainable
-✔ **Role-Based Access Control (RBAC)**
-✔ **API Versioning**
-✔ **CI/CD Ready**
-✔ **Containerized for Deployment**
+✔ **Modular Architecture**: Scalable & maintainable  
+✔ **Role-Based Access Control (RBAC)**  
+✔ **API Versioning**  
+✔ **CI/CD Ready**  
+✔ **Containerized for Deployment**  
+✔ **Comprehensive Testing & Observability Setup**  
+
+## 🛠 Testing Strategy
+✔ **Unit Test:** JUnit 5 & Mockito for service layer.  
+✔ **Integration Test:** Testcontainers to run real PostgreSQL in Docker.  
+✔ **API Test:** Spring Boot Test + RestAssured.  
+✔ **Code Coverage:** JaCoCo, ensuring at least 80% test coverage.  
+
+## 🔍 Observability Setup
+✔ **Logging:** SLF4J + Logback with traceId & requestId.  
+✔ **Tracing:** OpenTelemetry + Jaeger to track request flow.  
+✔ **Metrics:** Micrometer + Prometheus + Grafana for monitoring.  
 
 ---
 💡 **Contributing**
 Feel free to open issues and submit pull requests!
 
+📧 **Contact:** huynhbaomts2004@gmail.com
 
