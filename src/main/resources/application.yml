@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: mtsone
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mtsone_db
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    jwt:
+      secret-key: e558da3d47accdd580d050abbc12219109767f20a51769a7b529b02c0a2d0852e33c38517e836c2e96f6a91ccedde3359c8482b6ed3e9f4e261c9b134005321b
+      expiration: 86400000 # một ngày
+      refresh-token:
+        expiration: 604800000 # 7 ngày
+  profiles:
+    active: dev
+
+# Cấu hình Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    disable-swagger-default-url: true
+  show-actuator: false
+  packages-to-scan: com.mts.mtsone.modules
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+
