@@ -10,6 +10,7 @@ import com.mts.mtsone.modules.auth.mapper.UserMapper;
 import com.mts.mtsone.modules.auth.security.JwtService;
 import com.mts.mtsone.modules.auth.service.AuthenticationService;
 import com.mts.mtsone.modules.auth.service.UserService;
+import com.mts.mtsone.modules.auth.security.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -27,24 +29,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Value("${spring.security.jwt.expiration}")
     private long jwtExpiration;
 
-    @Override
-    @Transactional
-    public AuthenticationResponse register(UserCreateDTO request) {
-        UserDTO userDTO = userService.createUser(request);
-        String accessToken = jwtService.generateToken(mapToUserDetails(userDTO));
-        String refreshToken = jwtService.generateRefreshToken(mapToUserDetails(userDTO));
-        
-        return AuthenticationResponse.builder()
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .expiresIn(jwtExpiration / 1000)
-            .user(userDTO)
-            .build();
-    }
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -94,6 +83,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .expiresIn(jwtExpiration / 1000)
             .user(userDTO)
             .build();
+    }
+
+    @Override
+    public void logout(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new BusinessException("INVALID_TOKEN", "Token không hợp lệ");
+        }
+        
+        // Lấy thời gian hết hạn từ token
+        Date expirationDate = jwtService.extractExpiration(token);
+        
+        // Thêm token vào blacklist
+        tokenBlacklistService.blacklistToken(token, expirationDate.getTime());
     }
 
     private UserDetails mapToUserDetails(UserDTO userDTO) {
