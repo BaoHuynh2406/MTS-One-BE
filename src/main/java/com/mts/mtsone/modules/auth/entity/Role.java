@@ -4,15 +4,22 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"userRoles", "rolePermissions"})
+@EqualsAndHashCode(exclude = {"userRoles", "rolePermissions"})
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

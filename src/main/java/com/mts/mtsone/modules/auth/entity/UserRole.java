@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "user_roles",
@@ -12,9 +16,12 @@ import java.time.LocalDateTime;
         @UniqueConstraint(columnNames = {"user_id", "role_id"})
     }
 )
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"user", "role"})
+@EqualsAndHashCode(exclude = {"user", "role"})
 public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
