@@ -1,0 +1,5 @@
+[17/03/2025]
+    - Auth: User thiếu phân trang
+    - Auth: User thiếu lấy thông tin người dùng theo token hiện tại
+    - Auth: Thiếu các controller cho Roles và Permission
+    - Tiếp theo nghiên cứu triển khai ứng dụng React Native với module đăng nhập hiên tại
