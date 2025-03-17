@@ -22,6 +22,10 @@ public class UserController {
 
     private final UserService userService;
 
+    // Thiếu phân trang khi lấy danh sách người dùng
+    // Thiếu lấy người dùng theo token hiện tại
+    // Thiếu role controller và permision controler
+
     @GetMapping
     @Operation(summary = "Lấy danh sách người dùng")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers() {
