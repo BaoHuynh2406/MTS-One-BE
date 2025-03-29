@@ -14,6 +14,13 @@ public class TokenBlacklistService {
     private final BlacklistedTokenRepository blacklistedTokenRepository;
 
     public void blacklistToken(String token, Long expirationTime) {
+        if (expirationTime < System.currentTimeMillis()) {
+            return; // Token đã hết hạn, không thêm vào blacklist
+        }
+        //Kiễm tra xem nó có trong blacklist chưa?
+        if(isTokenBlacklisted(token)){
+            return; // Token đã có trong blacklist, không thêm vào blacklist nữa
+        }
         BlacklistedToken blacklistedToken = new BlacklistedToken();
         blacklistedToken.setToken(token);
         blacklistedToken.setExpirationDate(new Date(expirationTime));

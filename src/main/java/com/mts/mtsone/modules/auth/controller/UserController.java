@@ -23,7 +23,6 @@ public class UserController {
     private final UserService userService;
 
     // Thiếu phân trang khi lấy danh sách người dùng
-    // Thiếu lấy người dùng theo token hiện tại
     // Thiếu role controller và permision controler
 
     @GetMapping
@@ -37,6 +36,13 @@ public class UserController {
     @Operation(summary = "Lấy thông tin người dùng theo ID")
     public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable UUID id) {
         UserDTO user = userService.getUserById(id);
+        return ResponseEntity.ok(ApiResponse.success(user));
+    }
+
+    @GetMapping("/my-info")
+    @Operation(summary = "Lấy thông tin người dùng đang đăng nhập")
+    public ResponseEntity<ApiResponse<UserDTO>> getMyInfo() {
+        UserDTO user = userService.getMyInfo();
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 

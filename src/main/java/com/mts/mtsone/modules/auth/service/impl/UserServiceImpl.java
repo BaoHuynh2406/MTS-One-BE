@@ -1,5 +1,6 @@
 package com.mts.mtsone.modules.auth.service.impl;
 
+import com.mts.mtsone.common.exception.BusinessException;
 import com.mts.mtsone.common.exception.DuplicateResourceException;
 import com.mts.mtsone.common.exception.ResourceNotFoundException;
 import com.mts.mtsone.modules.auth.dto.UserCreateDTO;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -104,6 +107,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO getMyInfo() {
+        //Lấy user từ token
+        User currentUser = getCurrentUser();
+
+        if (currentUser == null) {
+            throw new RuntimeException("User not found in the current context");
+        }
+
+        return userMapper.toDTO(currentUser);
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new BusinessException("UNAUTHORIZED", "Người dùng chưa đăng nhập");
+        }
+
+        String username = authentication.getName();
+        return userRepository.findByUsernameWithRoles(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable).map(userMapper::toDTO);
@@ -158,4 +185,4 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
-} 
+}

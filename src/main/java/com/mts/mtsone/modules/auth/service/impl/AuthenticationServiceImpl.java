@@ -1,5 +1,6 @@
 package com.mts.mtsone.modules.auth.service.impl;
 
+import com.mts.mtsone.common.exception.BaseException;
 import com.mts.mtsone.common.exception.BusinessException;
 import com.mts.mtsone.modules.auth.dto.AuthenticationRequest;
 import com.mts.mtsone.modules.auth.dto.AuthenticationResponse;
@@ -13,7 +14,9 @@ import com.mts.mtsone.modules.auth.service.UserService;
 import com.mts.mtsone.modules.auth.security.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,27 +40,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-            )
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        UserDTO userDTO = userService.getUserByUsername(userDetails.getUsername());
-        
-        String accessToken = jwtService.generateToken(userDetails);
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            UserDTO userDTO = userService.getUserByUsername(userDetails.getUsername());
 
-        userService.updateLastLogin(userDTO.getId());
-        
-        return AuthenticationResponse.builder()
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .expiresIn(jwtExpiration / 1000)
-            .user(userDTO)
-            .build();
+            String accessToken = jwtService.generateToken(userDetails);
+            String refreshToken = jwtService.generateRefreshToken(userDetails);
+
+            userService.updateLastLogin(userDTO.getId());
+
+            return AuthenticationResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .expiresIn(jwtExpiration / 1000)
+                    .user(userDTO)
+                    .build();
+        } catch (BadCredentialsException e) {
+            throw new BusinessException("INCORECT_USERNAME_OR_PASSWORD","Sai tài khoản hoặc mật khẩu.");
+        } catch (Exception e) {
+            throw new BaseException("EROR","Đăng nhập thất bại, vui lòng thử lại.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

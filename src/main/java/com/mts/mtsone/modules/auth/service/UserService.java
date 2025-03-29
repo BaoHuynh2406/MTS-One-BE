@@ -19,7 +19,9 @@ public interface UserService {
     UserDTO getUserById(UUID id);
     
     UserDTO getUserByUsername(String username);
-    
+
+    UserDTO getMyInfo();
+
     Page<UserDTO> getAllUsers(Pageable pageable);
     
     void updateUserRoles(UUID userId, String[] roleNames);
