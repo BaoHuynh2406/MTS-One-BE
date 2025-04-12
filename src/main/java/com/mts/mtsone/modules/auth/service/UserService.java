@@ -33,4 +33,6 @@ public interface UserService {
     void updateLastLogin(UUID id);
 
     List<UserDTO> getAllUsers();
+    
+    Page<UserDTO> getAllUsers(int page, int size);
 }

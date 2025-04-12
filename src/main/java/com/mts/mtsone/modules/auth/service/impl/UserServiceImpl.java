@@ -16,6 +16,7 @@ import com.mts.mtsone.modules.auth.repository.UserRoleRepository;
 import com.mts.mtsone.modules.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -133,6 +134,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::toDTO);
+    }
+
+    @Override
+    public Page<UserDTO> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAll(pageable).map(userMapper::toDTO);
     }
 

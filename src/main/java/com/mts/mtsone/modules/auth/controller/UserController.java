@@ -1,6 +1,7 @@
 package com.mts.mtsone.modules.auth.controller;
 
 import com.mts.mtsone.common.response.ApiResponse;
+import com.mts.mtsone.common.response.PaginationInfo;
 import com.mts.mtsone.modules.auth.dto.UserCreateDTO;
 import com.mts.mtsone.modules.auth.dto.UserDTO;
 import com.mts.mtsone.modules.auth.dto.UserUpdateDTO;
@@ -22,14 +23,24 @@ public class UserController {
 
     private final UserService userService;
 
-    // Thiếu phân trang khi lấy danh sách người dùng
     // Thiếu role controller và permision controler
 
     @GetMapping
-    @Operation(summary = "Lấy danh sách người dùng")
-    public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers() {
-        List<UserDTO> users = userService.getAllUsers();
-        return ResponseEntity.ok(ApiResponse.success(users));
+    @Operation(
+        summary = "Lấy danh sách người dùng có phân trang", 
+        description = "API này trả về danh sách người dùng với phân trang. Mặc định page=0, size=10"
+    )
+    public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "Lấy danh sách người dùng thành công",
+                userService.getAllUsers(page-1, size).getContent(),
+                PaginationInfo.of(userService.getAllUsers(page, size))
+            )
+        );
     }
 
     @GetMapping("/{id}")
@@ -66,4 +77,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success("Xóa người dùng thành công"));
     }
-} 
+}
