@@ -11,28 +11,31 @@ import java.util.UUID;
 
 public interface UserService {
     UserDTO createUser(UserCreateDTO createDTO);
-    
+
     UserDTO updateUser(UUID id, UserUpdateDTO updateDTO);
-    
+
+    //Cập nhật Active
+    UserDTO updateActiveUser(UUID id, boolean isActive);
+
+    //Cập nhật password
+    void updatePassword(UUID id, String password);
+
     void deleteUser(UUID id);
-    
+
     UserDTO getUserById(UUID id);
-    
+
     UserDTO getUserByUsername(String username);
 
     UserDTO getMyInfo();
 
     Page<UserDTO> getAllUsers(Pageable pageable);
-    
+
     void updateUserRoles(UUID userId, String[] roleNames);
-    
-    void activateUser(UUID id);
-    
-    void deactivateUser(UUID id);
-    
+
     void updateLastLogin(UUID id);
 
     List<UserDTO> getAllUsers();
-    
-    Page<UserDTO> getAllUsers(int page, int size);
+
+    Page<UserDTO> getAllUsers(int page, int size, boolean active, String searchKey);
+
 }

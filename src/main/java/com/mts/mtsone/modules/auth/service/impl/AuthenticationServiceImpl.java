@@ -41,6 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
+            // Xác thực thông tin đăng nhập
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(),
@@ -51,9 +52,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             UserDTO userDTO = userService.getUserByUsername(userDetails.getUsername());
 
+            // Kiểm tra trạng thái tài khoản
+            if (!userDTO.isActive()) {
+                throw new BaseException(
+                    "ACCOUNT_LOCKED",
+                    "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.",
+                    HttpStatus.FORBIDDEN
+                );
+            }
+
+            // Tạo token và cập nhật thông tin đăng nhập
             String accessToken = jwtService.generateToken(userDetails);
             String refreshToken = jwtService.generateRefreshToken(userDetails);
-
             userService.updateLastLogin(userDTO.getId());
 
             return AuthenticationResponse.builder()
@@ -62,10 +72,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .expiresIn(jwtExpiration / 1000)
                     .user(userDTO)
                     .build();
+
         } catch (BadCredentialsException e) {
-            throw new BusinessException("INCORECT_USERNAME_OR_PASSWORD","Sai tài khoản hoặc mật khẩu.");
+            throw new BusinessException(
+                "INVALID_CREDENTIALS",
+                "Tên đăng nhập hoặc mật khẩu không chính xác."
+            );
+        } catch (BaseException e) {
+            throw e;
         } catch (Exception e) {
-            throw new BaseException("EROR","Đăng nhập thất bại, vui lòng thử lại.", HttpStatus.BAD_REQUEST);
+            throw new BaseException(
+                "AUTHENTICATION_ERROR",
+                "Có lỗi xảy ra trong quá trình đăng nhập. Vui lòng thử lại sau.",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -116,4 +136,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .toArray(String[]::new))
             .build();
     }
-} 
+}

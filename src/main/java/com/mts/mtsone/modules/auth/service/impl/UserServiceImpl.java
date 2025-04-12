@@ -73,14 +73,28 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UUID id, UserUpdateDTO updateDTO) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-
         if (updateDTO.getEmail() != null && !updateDTO.getEmail().equals(user.getEmail()) 
             && userRepository.existsByEmail(updateDTO.getEmail())) {
             throw new DuplicateResourceException("User", "email", updateDTO.getEmail());
         }
-
         userMapper.updateEntityFromDTO(updateDTO, user);
         return userMapper.toDTO(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO updateActiveUser(UUID id, boolean isActive) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+        user.setActive(isActive);
+        return userMapper.toDTO(user);
+    }
+
+    @Override
+    public void updatePassword(UUID id, String password) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
     }
 
     @Override
@@ -138,9 +152,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDTO> getAllUsers(int page, int size) {
+    public Page<UserDTO> getAllUsers(int page, int size, boolean active, String searchKey) {
         Pageable pageable = PageRequest.of(page, size);
-        return userRepository.findAll(pageable).map(userMapper::toDTO);
+        return userRepository.findAllWithFilters(active, searchKey, pageable)
+                .map(userMapper::toDTO);
     }
 
     @Override
@@ -160,22 +175,6 @@ public class UserServiceImpl implements UserService {
             userRole.setAssignedAt(LocalDateTime.now());
             userRoleRepository.save(userRole);
         });
-    }
-
-    @Override
-    public void activateUser(UUID id) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-        user.setActive(true);
-        userRepository.save(user);
-    }
-
-    @Override
-    public void deactivateUser(UUID id) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-        user.setActive(false);
-        userRepository.save(user);
     }
 
     @Override
