@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -56,10 +57,14 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(order));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Tạo mới đơn hàng")
-    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(@RequestBody CreateOrderDTO createOrderDTO) {
-        OrderDTO order = orderService.createOrder(createOrderDTO);
+    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(
+            @RequestPart("orderData") CreateOrderDTO createOrderDTO,
+            @RequestPart("orderPhoto") MultipartFile orderPhoto,
+            @RequestPart("deliveryPhoto") MultipartFile deliveryPhoto
+    ) {
+        OrderDTO order = orderService.createOrder(createOrderDTO, orderPhoto, deliveryPhoto);
         return ResponseEntity.ok(ApiResponse.success("Tạo đơn hàng thành công", order));
     }
 

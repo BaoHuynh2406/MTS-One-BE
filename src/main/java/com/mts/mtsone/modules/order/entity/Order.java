@@ -48,6 +48,9 @@ public class Order {
     @Column(name = "order_image")
     private String orderImage;
 
+    @Column(name = "phone_photo")
+    private String phonePhoto;
+    
     @Column(name = "delivery_photo")
     private String deliveryPhoto;
 
