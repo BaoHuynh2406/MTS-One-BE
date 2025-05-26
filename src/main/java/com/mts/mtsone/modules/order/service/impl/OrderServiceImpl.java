@@ -28,9 +28,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO createOrder(
         CreateOrderDTO createOrderDTO,
-        MuitiPartFile orderPhoto, 
-        MuitiPartFile phonePhoto, 
-        MuitiPartFile diliveryPhoto) {
+        MultipartFile orderPhoto,
+        MultipartFile phonePhoto,
+        MultipartFile diliveryPhoto) {
         if (orderRepository.existsByOrderCode(createOrderDTO.getOrderCode())) {
             throw new BusinessException("ORDER_CODE_EXISTS", "Mã đơn hàng đã tồn tại");
         }

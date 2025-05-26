@@ -19,12 +19,7 @@ public class OcrController {
     @GetMapping("/read")
     @Operation(summary = "Đọc text từ ảnh")
     public ResponseEntity<ApiResponse<String>> readTextFromImage(@RequestParam("imagePath") String imagePath) {
-        try {
-            String result = ocrService.performOcr(imagePath);
-            return ResponseEntity.ok(ApiResponse.success("OCR thành công", result));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body(ApiResponse.error(e.getMessage()));
-        }
+        String result = ocrService.performOcr(imagePath);
+        return ResponseEntity.ok(ApiResponse.success("OCR thành công", result));
     }
 }

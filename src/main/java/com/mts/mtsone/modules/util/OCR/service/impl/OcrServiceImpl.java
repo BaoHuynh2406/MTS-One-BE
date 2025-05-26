@@ -1,11 +1,14 @@
 package com.mts.mtsone.modules.util.OCR.service.impl;
 
+import com.mts.mtsone.common.exception.BaseException;
 import com.mts.mtsone.common.exception.BusinessException;
+import com.mts.mtsone.common.exception.ResourceNotFoundException;
 import com.mts.mtsone.modules.util.OCR.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -21,7 +24,7 @@ public class OcrServiceImpl implements OcrService {
     private String uploadDir;
 
     @Override
-    public String performOcr(String imagePath) throws IOException {
+    public String performOcr(String imagePath)  {
         try {
             // Khởi tạo Tesseract
             Tesseract tesseract = new Tesseract();
@@ -34,7 +37,7 @@ public class OcrServiceImpl implements OcrService {
             File imageFile = fullPath.toFile();
             
             if (!imageFile.exists()) {
-                throw new BusinessException("Image file not found: " + imagePath);
+                throw new ResourceNotFoundException("Image file not found: ", "path",imagePath);
             }
 
             // Thực hiện OCR
@@ -45,9 +48,9 @@ public class OcrServiceImpl implements OcrService {
             
             return result;
 
-        } catch (TesseractException e) {
+        } catch (Exception e) {
             log.error("Error performing OCR on image: " + imagePath, e);
-            throw new BusinessException("Failed to perform OCR: " + e.getMessage());
+            throw new BaseException("Failed to perform OCR: ", e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

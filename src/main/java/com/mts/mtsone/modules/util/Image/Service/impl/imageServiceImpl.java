@@ -1,8 +1,11 @@
 package com.mts.mtsone.modules.util.Image.Service.impl;
 
+import com.mts.mtsone.common.exception.BaseException;
 import com.mts.mtsone.common.exception.BusinessException;
-import com.mts.mtsone.modules.util.Image.Service.ImageService;
+import com.mts.mtsone.common.exception.ResourceNotFoundException;
+import com.mts.mtsone.modules.util.Image.Service.imageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-public class ImageServiceImpl implements ImageService {
+public class imageServiceImpl implements imageService {
 
     @Value("${app.upload.dir}")
     private String uploadDir;
@@ -22,13 +25,13 @@ public class ImageServiceImpl implements ImageService {
     public String saveImage(MultipartFile file, String subFolder) throws IOException {
         // Kiểm tra file
         if (file.isEmpty()) {
-            throw new BusinessException("File is empty");
+            throw new ResourceNotFoundException("File is empty", "file", file);
         }
 
         // Kiểm tra định dạng file
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            throw new BusinessException("File must be an image");
+            throw new BaseException("File must be an image", "file", HttpStatus.CONFLICT);
         }
 
         // Tạo tên file ngẫu nhiên với UUID
@@ -57,7 +60,7 @@ public class ImageServiceImpl implements ImageService {
     public byte[] getImage(String imagePath) throws IOException {
         Path path = Paths.get(uploadDir + imagePath);
         if (!Files.exists(path)) {
-            throw new BusinessException("Image not found");
+            throw new ResourceNotFoundException("Image not found", "Image", imagePath);
         }
         return Files.readAllBytes(path);
     }

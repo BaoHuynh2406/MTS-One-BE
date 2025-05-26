@@ -11,9 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 public interface OrderService {
     OrderDTO createOrder(
         CreateOrderDTO createOrderDTO, 
-        MuitiPartFile orderPhoto, 
-        MuitiPartFile phonePhoto, 
-        MuitiPartFile diliveryPhoto);
+        MultipartFile orderPhoto,
+        MultipartFile phonePhoto,
+        MultipartFile diliveryPhoto);
         
     OrderDTO updateOrder(UUID id, CreateOrderDTO orderDTO);
     void deleteOrder(UUID id);

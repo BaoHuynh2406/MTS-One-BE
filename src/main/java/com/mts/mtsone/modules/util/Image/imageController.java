@@ -1,6 +1,6 @@
-package com.mts.mtsone.modules.util.Image.controller;
+package com.mts.mtsone.modules.util.Image;
 
-import com.mts.mtsone.modules.util.Image.Service.ImageService;
+import com.mts.mtsone.modules.util.Image.Service.imageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/images")
 @RequiredArgsConstructor
 @Tag(name = "Image Management", description = "API quản lý hình ảnh")
-public class ImageController {
+public class imageController {
 
-    private final ImageService imageService;
+    private final imageService imageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload hình ảnh")
