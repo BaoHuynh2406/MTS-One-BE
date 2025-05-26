@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -25,14 +26,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderDTO createOrder(CreateOrderDTO createOrderDTO) {
+    public OrderDTO createOrder(
+        CreateOrderDTO createOrderDTO,
+        MultipartFile orderPhoto,
+        MultipartFile phonePhoto,
+        MultipartFile diliveryPhoto) {
         if (orderRepository.existsByOrderCode(createOrderDTO.getOrderCode())) {
             throw new BusinessException("ORDER_CODE_EXISTS", "Mã đơn hàng đã tồn tại");
         }
-
+        //Cần nhận thêm file upload của 3 ảnh
+        //Gọi logic xử lý ảnh để lưu 3 ảnh lại
         Order order = orderMapper.toEntity(createOrderDTO);
         order.setStatus(OrderStatus.PENDING);
         order = orderRepository.save(order);
+        //Gán lại đườn dẫn của 3 ảnh vào entity order
+
+        //Gọi Task OCR Async để xử lý ảnh đã lưu
+        //Nếu có SĐT khách hàng hoặc ảnh số điện thoại truyền vào 
+        //để thực hiện việc lưu khách hàng
         return orderMapper.toDTO(order);
     }
 

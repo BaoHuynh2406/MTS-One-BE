@@ -13,6 +13,5 @@ public class CreateOrderDTO {
     private Ecom ecom;
     private Date deliveryAt;
     private UUID customerId;
-    private String orderImage;
-    private String deliveryPhoto;
+    private String phoneNumber;
 }

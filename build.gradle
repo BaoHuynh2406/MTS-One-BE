@@ -47,6 +47,8 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	// === Swagger (API Documentation) ===
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+	// Tesseract OCR dependencies
+	implementation 'net.sourceforge.tess4j:tess4j:5.8.0'
 }
 
 tasks.named('test') {

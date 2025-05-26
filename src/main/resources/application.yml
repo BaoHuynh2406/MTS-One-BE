@@ -18,6 +18,12 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+  
   security:
     jwt:
       secret-key: e558da3d47accdd580d050abbc12219109767f20a51769a7b529b02c0a2d0852e33c38517e836c2e96f6a91ccedde3359c8482b6ed3e9f4e261c9b134005321b
@@ -46,4 +52,8 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate.SQL: FALSE
+
+app:
+  upload:
+    dir: D:/MTS-One/uploads/images/
 
