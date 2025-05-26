@@ -9,7 +9,9 @@ import com.mts.mtsone.modules.customer.repository.CustomerRepository;
 import com.mts.mtsone.modules.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,11 +63,16 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("CUSTOMER_NOT_FOUND", "Không tìm thấy khách hàng"));
         return customerMapper.toDTO(customer);
-    }
-
-    @Override
-    public Page<CustomerDTO> getAllCustomers(Pageable pageable) {
-        return customerRepository.findAll(pageable)
+    }    @Override
+    @Transactional(readOnly = true)
+    public Page<CustomerDTO> getAllCustomers(int page, int size, String searchKey) {
+        if(page < 0 || size < 0) {
+            page = 0;
+            size = 10;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        String normalizedSearchKey = searchKey != null ? searchKey.trim() : "";
+        return customerRepository.findAllWithFilters(normalizedSearchKey, pageable)
                 .map(customerMapper::toDTO);
     }
 }

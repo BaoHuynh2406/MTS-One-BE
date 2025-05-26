@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -59,14 +61,15 @@ public class CustomerController {
         summary = "Lấy danh sách khách hàng có phân trang",
         description = "API này trả về danh sách khách hàng với phân trang. Mặc định page=0, size=10"
     )
-    public ResponseEntity<ApiResponse<Page<CustomerDTO>>> getAllCustomers(
+    public ResponseEntity<ApiResponse<List<CustomerDTO>>> getAllCustomers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<CustomerDTO> customers = customerService.getAllCustomers(org.springframework.data.domain.PageRequest.of(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String searchKey) {
+        Page<CustomerDTO> customers = customerService.getAllCustomers(page-1, size, searchKey);
         return ResponseEntity.ok(
             ApiResponse.success(
                 "Lấy danh sách khách hàng thành công",
-                customers,
+                customers.getContent(),
                 PaginationInfo.of(customers)
             )
         );
